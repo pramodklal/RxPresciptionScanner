@@ -13,8 +13,8 @@ from utils import apply_css, initialize_session, get_model_name
 load_dotenv()
 
 # Quick Note of RX Scanner:
-# Inspired by the need to provide a patient to understand a doctor presciption using advanced AI models,
-# easy to understand diseases and possible causes and precautions by understanding a presciption.
+# Inspired by the need to provide a patient to understand a doctor Prescription using advanced AI models,
+# easy to understand diseases and possible causes and precautions by understanding a Prescription.
 
 # ---------------------------------------------------
 # 2. Configure API Key
@@ -43,7 +43,7 @@ def get_gemini_response(input_prompt, image):
     Sends the input prompt and image data to Gemini and retrieves the response.
     
     Args:
-        input_prompt (str): The prompt instructing the AI on how to understand a doctor presciption.
+        input_prompt (str): The prompt instructing the AI on how to understand a doctor Prescription.
         image (list): A list containing image data prepared for the API call.
     
     Returns:
@@ -93,32 +93,32 @@ top_p = st.sidebar.slider("Top P", 0.0, 1.0, 0.95)
 top_k = st.sidebar.slider("Top K", 0, 100, 64)
 max_output_tokens = st.sidebar.slider("Max Output Tokens", 1, 8192, 8192)
 apply_css(st.session_state['dark_mode'])
-#st.title("My Presciption")
+#st.title("My Prescription")
 
 # Display App Title
-st.markdown("<h1 style='color:blue;vertical-align:top;'>Eazy Doctor Presciption</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:blue;vertical-align:top;'>Eazy Doctor Prescription</h1>", unsafe_allow_html=True)
 
 # Optional: Additional Inputs (Scene Type, Desired Feedback, etc.)
 # For simplicity, we'll keep only the image upload in this example.
 
 # Set Up Image Upload Interface
-uploaded_file = st.file_uploader("Upload a Photo for Summarize a doctor Presciption", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("Upload your doctor prescription in the format "jpg", "png", "jpeg"  to get Summarized", type=["jpg", "png", "jpeg"])
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded presciption", use_container_width =True)
+    st.image(image, caption="Uploaded prescription", use_container_width =True)
 
 # ---------------------------------------------------
 # 5. User Interaction & Summarize My Presciption
 # ---------------------------------------------------
 
-# Submit Button to Summarize My Presciption
-submit = st.button("More About My Presciption")
+# Submit Button to Summarize My Prescription
+submit = st.button("More About My Prescription")
 
-# Define Summarize My Presciption Prompt
+# Define Summarize My Prescription Prompt
 
 
-input_prompt="""This image contains a doctor presciption with patient name along some notes. At the end of note add disclaimer
-Given the presciption, describe the patient name in first table  and   medicines name along with description of medicines and associated diseases as thoroughly as possible based on what you
+input_prompt="""This image contains a doctor prescription with patient name along some notes. At the end of note add disclaimer
+Given the prescription, describe the patient name in first table  and   medicines name along with description of medicines and associated diseases as thoroughly as possible based on what you
 see in the image, make sure to note all of the medicines desctiption and dosage. Return output in second table format:
 {description: description, features: [feature1, feature2, feature3, etc]}
 In third table describe future treatments and in fourth table descibe possible precautions based on the diseases.
@@ -134,7 +134,7 @@ if submit:
         # Generate Summarize My Presciption
         response = get_gemini_response(input_prompt, image_data)
         
-        # Display AI-Generated Summarize My Presciption
+        # Display AI-Generated Summarize My Prescription
         st.subheader("More About My Presciption")
         st.write(response)
         #genai.delete_file(uploaded_file.name)
