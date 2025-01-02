@@ -102,7 +102,7 @@ st.markdown("<h1 style='color:blue;vertical-align:top;'>Eazy Doctor Prescription
 # For simplicity, we'll keep only the image upload in this example.
 
 # Set Up Image Upload Interface
-uploaded_file = st.file_uploader("Upload your doctor prescription in the format jpg, png, jpeg to know more about it.", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("<h5 style='color:red;vertical-align:top;'>Upload your doctor prescription in the format jpg, png, jpeg to know more about it.</h5>", type=["jpg", "png", "jpeg"])
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded prescription", use_container_width =True)
