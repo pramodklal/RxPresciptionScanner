@@ -1,0 +1,9 @@
+google-cloud-aiplatform
+langchain
+langchain-openai
+datasets
+pypdf
+python-dotenv
+streamlit
+pytesseract
+google-generativeai

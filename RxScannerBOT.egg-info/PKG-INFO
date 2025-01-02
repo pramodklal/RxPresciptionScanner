@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: RxScannerBOT
+Version: 0.0.1
+Author: Pramod
+Author-email: pramodklal@gmail.com
+Requires-Dist: google-cloud-aiplatform
+Requires-Dist: langchain
+Requires-Dist: langchain-openai
+Requires-Dist: datasets
+Requires-Dist: pypdf
+Requires-Dist: python-dotenv
+Requires-Dist: streamlit
+Requires-Dist: pytesseract
+Requires-Dist: google-generativeai

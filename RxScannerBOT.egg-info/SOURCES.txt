@@ -1,0 +1,8 @@
+README.md
+setup.py
+RxScannerBOT/__init__.py
+RxScannerBOT.egg-info/PKG-INFO
+RxScannerBOT.egg-info/SOURCES.txt
+RxScannerBOT.egg-info/dependency_links.txt
+RxScannerBOT.egg-info/requires.txt
+RxScannerBOT.egg-info/top_level.txt
