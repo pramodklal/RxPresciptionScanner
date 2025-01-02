@@ -83,7 +83,7 @@ def get_image_content(uploaded_file):
 st.set_page_config(page_title="Summarize My Presciption", layout="centered")
 initialize_session()
 st.sidebar.title("Settings")
-#st.session_state['dark_mode'] = st.sidebar.checkbox("Dark Mode", value=st.session_state['dark_mode'])
+#st.session_state['dark_mode'] = st.sidebar.checkbox("Blue Mode", value=st.session_state['blue_mode'])
 model_choice = st.sidebar.selectbox(
         "Choose Model:",
         ["Gemini 1.5 Flash"]
@@ -102,7 +102,7 @@ st.markdown("<h1 style='color:blue;vertical-align:top;'>Eazy Doctor Prescription
 # For simplicity, we'll keep only the image upload in this example.
 
 # Set Up Image Upload Interface
-uploaded_file = st.file_uploader("Upload your doctor prescription in the format jpg, png, jpeg to get Summarized", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("Upload your doctor prescription in the format jpg, png, jpeg to know more about it.", type=["jpg", "png", "jpeg"])
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded prescription", use_container_width =True)
