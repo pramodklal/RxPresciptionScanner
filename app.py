@@ -131,7 +131,7 @@ if uploaded_file is not None:
 submit = st.button("More About My Prescription!!")
 
 # Submit Button to Summarize My Prescription
-#email = st.button("Email Me!!")
+email = st.button("Email Me!!")
 def send_email(sender_email, sender_password, receiver_email, subject, body):
     """Sends an email via Gmail.
 
