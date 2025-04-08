@@ -4,7 +4,11 @@ import google.generativeai as genai  # Google Generative AI Python SDK that cont
 import streamlit as st
 from PIL import Image
 from utils import apply_css, initialize_session, get_model_name
+from pathlib import Path
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 # ---------------------------------------------------
 # 1. Initialize Environment
 # ---------------------------------------------------
@@ -13,8 +17,8 @@ from utils import apply_css, initialize_session, get_model_name
 load_dotenv()
 
 # Quick Note of RX Scanner:
-# Inspired by the need to provide a patient to understand a doctor Prescription using advanced AI models,
-# easy to understand diseases and possible causes and precautions by understanding a Prescription.
+# Inspired by the need to provide a patient to understand a doctor presciption using advanced AI models,
+# easy to understand diseases and possible causes and precautions by understanding a presciption.
 
 # ---------------------------------------------------
 # 2. Configure API Key
@@ -30,20 +34,47 @@ if not GOOGLE_API_KEY:
 genai.configure(api_key=GOOGLE_API_KEY)
 
 #--------------------ST.Parameter
+# Configure Streamlit Page
+st.set_page_config(page_title="Summarize My Prescription ", layout="centered")
+initialize_session()
+st.sidebar.title("Settings")
+model_choice = {
+    "id1": "Gemini-2.0",
+    "id2": "Gemini-1.5",
+}
+model_list = st.sidebar.selectbox("Choose Model:", list(model_choice.items()), 0 , format_func=lambda o: o[1])
+
+temperature = st.sidebar.slider("Temperature", 0.0, 1.0, 1.0)
+top_p = st.sidebar.slider("Top P", 0.0, 1.0, 0.95)
+top_k = st.sidebar.slider("Top K", 0, 100, 64)
+max_output_tokens = st.sidebar.slider("Max Output Tokens", 1, 8192, 8192)
+
+apply_css(st.session_state['dark_mode'])
+#st.title("My Prescription")
+# Display App Title
+st.image("Rxnew.jpg")
+st.markdown("<h2 style='color:blue;vertical-align:top;'>Eazy Doctor Prescription </h2>", unsafe_allow_html=True)
+
 
 # ---------------------------------------------------
 # 3. Initialize Generative Model & Define Functions
 # ---------------------------------------------------
 
 # Initialize the Generative Model
-model = genai.GenerativeModel("gemini-1.5-flash-8b")  # Initializes an instance of the GenerativeModel class from the genai SDK
+selected_model=""
+if (model_list[1]=="Gemini-2.0"):
+    selected_model= "gemini-2.0-flash"
+if (model_list[1]=="Gemini-1.5"):
+   selected_model = "gemini-1.5-flash-8b"
 
+ # Initializes an instance of the GenerativeModel class from the genai SDK
+model = genai.GenerativeModel(selected_model) 
 def get_gemini_response(input_prompt, image):
     """
     Sends the input prompt and image data to Gemini and retrieves the response.
     
     Args:
-        input_prompt (str): The prompt instructing the AI on how to understand a doctor Prescription.
+        input_prompt (str): The prompt instructing the AI on how to understand a doctor prescription .
         image (list): A list containing image data prepared for the API call.
     
     Returns:
@@ -65,13 +96,15 @@ def get_image_content(uploaded_file):
     Raises:
         FileNotFoundError: If no file is uploaded.
     """
+    fileType = Path(uploaded_file.name).suffix
     if uploaded_file is not None:
-        image_byte_data = uploaded_file.getvalue()
-        image_parts = [{
-            "mime_type": uploaded_file.type,
-            "data": image_byte_data
-        }]
-        return image_parts
+        if(fileType==".png" or fileType==".jpg" or  fileType==".jpeg"  or fileType==".gif"):
+            image_byte_data = uploaded_file.getvalue()
+            image_parts = [{
+                "mime_type": uploaded_file.type,
+                "data": image_byte_data
+            }]
+            return image_parts
     else:
         raise FileNotFoundError("File not uploaded")
 
@@ -79,51 +112,63 @@ def get_image_content(uploaded_file):
 # 4. Streamlit Interface Setup
 # ---------------------------------------------------
 
-# Configure Streamlit Page
-st.set_page_config(page_title="Summarize My Prescription", layout="centered")
-initialize_session()
-st.sidebar.title("Settings")
-#st.session_state['dark_mode'] = st.sidebar.checkbox("Blue Mode", value=st.session_state['blue_mode'])
-model_choice = st.sidebar.selectbox(
-        "Choose Model:",
-        ["Gemini 1.5 Flash"]
-    )
-temperature = st.sidebar.slider("Temperature", 0.0, 1.0, 1.0)
-top_p = st.sidebar.slider("Top P", 0.0, 1.0, 0.95)
-top_k = st.sidebar.slider("Top K", 0, 100, 64)
-max_output_tokens = st.sidebar.slider("Max Output Tokens", 1, 8192, 8192)
-apply_css(st.session_state['dark_mode'])
-#st.title("My Prescription")
-
-# Display App Title
-st.markdown("<h1 style='color:blue;vertical-align:top;'>Eazy Doctor Prescription</h1>", unsafe_allow_html=True)
 
 # Optional: Additional Inputs (Scene Type, Desired Feedback, etc.)
 # For simplicity, we'll keep only the image upload in this example.
 
 # Set Up Image Upload Interface
-uploaded_file = st.file_uploader("Upload your doctor prescription in the format jpg, png, jpeg to know more about it.", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("Upload a Photo for Summarize a doctor Prescription ", type=["jpg", "png", "jpeg","gif"])
+#fileExt=uploaded_file.name
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded prescription", use_container_width =True)
+    st.image(image, caption="Uploaded Prescription ", use_container_width =True)
 
 # ---------------------------------------------------
-# 5. User Interaction & Summarize My Presciption
+# 5. User Interaction & Summarize My Prescription
 # ---------------------------------------------------
 
 # Submit Button to Summarize My Prescription
-submit = st.button("More About My Prescription")
+submit = st.button("More About My Prescription!!")
+
+# Submit Button to Summarize My Prescription
+#email = st.button("Email Me!!")
+def send_email(sender_email, sender_password, receiver_email, subject, body):
+    """Sends an email via Gmail.
+
+    Args:
+        sender_email: The sender's email address.
+        sender_password: The sender's email password or app password.
+        receiver_email: The recipient's email address.
+        subject: The subject of the email.
+        body: The body of the email.
+    """
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = receiver_email
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        text = msg.as_string()
+        server.sendmail(sender_email, receiver_email, text)
+        server.quit()
+        print("Email sent successfully!")
+    except Exception as e:
+        print(f"An error occurred:: {e}")
 
 # Define Summarize My Prescription Prompt
 
 
-input_prompt="""This image contains a doctor prescription with patient name along some notes. At the end of note add disclaimer
+input_prompt="""This image contains a doctor prescription  with patient name along some notes. At the end of note add disclaimer
 Given the prescription, describe the patient name in first table  and   medicines name along with description of medicines and associated diseases as thoroughly as possible based on what you
 see in the image, make sure to note all of the medicines desctiption and dosage. Return output in second table format:
 {description: description, features: [feature1, feature2, feature3, etc]}
-In third table describe future treatments and in fourth table descibe possible precautions based on the diseases.
+In third table describe future treatments,in fourth table descibe possible precautions based on the diseases . If there is any possibility to recommand diet based diseases then display 7 days diet plan in fifth table .  
 """
-
 
 if submit:
     try:
@@ -131,16 +176,30 @@ if submit:
         # Handle Image Upload and Display
         image_data = get_image_content(uploaded_file)
         
-        # Generate Summarize My Presciption
+        # Generate Summarize My Prescription
         response = get_gemini_response(input_prompt, image_data)
         
         # Display AI-Generated Summarize My Prescription
-        st.subheader("More About My Presciption")
+        st.subheader("More About My Prescription ")
         st.write(response)
+       
         #genai.delete_file(uploaded_file.name)
     except FileNotFoundError as e:
-        # Manage Errors: Presciption Not Uploaded
+        # Manage Errors: Prescription Not Uploaded
         st.error(str(e))
+    except Exception as e:
+        # Manage Errors: Other Exceptions
+        st.error(f"An error occurred: {e}")
+
+if email:
+    try:
+        
+        # Handle Image Upload and Display
+        image_data = get_image_content(uploaded_file)
+        # Get Response to send as an emaail content
+        response = get_gemini_response(input_prompt, image_data)
+        send_email("pramodklal@gmail.com","","pkumarsg21@gmail.com","Your Eazy Presctiption Report",response)
+        st.write("Email sent!!!!")
     except Exception as e:
         # Manage Errors: Other Exceptions
         st.error(f"An error occurred: {e}")
