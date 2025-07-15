@@ -5,7 +5,6 @@ import streamlit as st
 from PIL import Image
 from utils import apply_css, initialize_session, get_model_name
 from pathlib import Path
-
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -162,6 +161,7 @@ if submit:
             file_name="prescription_summary.txt",
             mime="text/plain"
         )
+
         #genai.delete_file(uploaded_file.name)
     except FileNotFoundError as e:
         # Manage Errors: Prescription Not Uploaded
@@ -169,6 +169,10 @@ if submit:
     except Exception as e:
         # Manage Errors: Other Exceptions
         st.error(f"An error occurred: {e}")
+
+# Footer
+st.markdown('<hr style="margin-top: 2em; margin-bottom: 0.5em;">', unsafe_allow_html=True)
+st.markdown('<div style="text-align:center; color: #888; font-size: 1.1em;">Made with ❤️ by Pramod Lal</div>', unsafe_allow_html=True)
 
 
 
