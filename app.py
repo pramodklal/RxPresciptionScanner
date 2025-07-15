@@ -39,8 +39,9 @@ st.set_page_config(page_title="Summarize My Prescription ", layout="centered")
 initialize_session()
 st.sidebar.title("Settings")
 model_choice = {
-    "id1": "Gemini-2.0",
-    "id2": "Gemini-1.5",
+   # "id1": "Gemini-2.5",
+    "id2": "Gemini-2.0",
+    "id3": "Gemini-1.5",
 }
 model_list = st.sidebar.selectbox("Choose Model:", list(model_choice.items()), 0 , format_func=lambda o: o[1])
 
@@ -62,6 +63,8 @@ st.markdown("<h2 style='color:blue;vertical-align:top;'>Eazy Doctor Prescription
 
 # Initialize the Generative Model
 selected_model=""
+#if (model_list[1]=="Gemini-2.5"):
+    #selected_model= "gemini-2.5.pro-exp-03-25"#gemini-2.5-pro-preview-03-25
 if (model_list[1]=="Gemini-2.0"):
     selected_model= "gemini-2.0-flash"
 if (model_list[1]=="Gemini-1.5"):
@@ -127,62 +130,38 @@ if uploaded_file is not None:
 # 5. User Interaction & Summarize My Prescription
 # ---------------------------------------------------
 
+
 # Submit Button to Summarize My Prescription
 submit = st.button("More About My Prescription!!")
-
-# Submit Button to Summarize My Prescription
-email = st.button("Email Me!!")
-def send_email(sender_email, sender_password, receiver_email, subject, body):
-    """Sends an email via Gmail.
-
-    Args:
-        sender_email: The sender's email address.
-        sender_password: The sender's email password or app password.
-        receiver_email: The recipient's email address.
-        subject: The subject of the email.
-        body: The body of the email.
-    """
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = receiver_email
-    msg['Subject'] = subject
-
-    msg.attach(MIMEText(body, 'plain'))
-
-    try:
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        text = msg.as_string()
-        server.sendmail(sender_email, receiver_email, text)
-        server.quit()
-        print("Email sent successfully!")
-    except Exception as e:
-        print(f"An error occurred:: {e}")
 
 # Define Summarize My Prescription Prompt
 
 
-input_prompt="""This image contains a doctor prescription  with patient name along some notes. At the end of note add disclaimer
+input_prompt="""This image contains a doctor prescription  with patient name along some notes. At the end of note must add disclaimer
 Given the prescription, describe the patient name in first table  and   medicines name along with description of medicines and associated diseases as thoroughly as possible based on what you
 see in the image, make sure to note all of the medicines desctiption and dosage. Return output in second table format:
 {description: description, features: [feature1, feature2, feature3, etc]}
 In third table describe future treatments,in fourth table descibe possible precautions based on the diseases . If there is any possibility to recommand diet based diseases then display 7 days diet plan in fifth table .  
 """
 
+
 if submit:
     try:
-        
         # Handle Image Upload and Display
         image_data = get_image_content(uploaded_file)
-        
         # Generate Summarize My Prescription
         response = get_gemini_response(input_prompt, image_data)
-        
         # Display AI-Generated Summarize My Prescription
         st.subheader("More About My Prescription ")
         st.write(response)
-       
+        # Show download button after content is generated
+        st.subheader("Download Your Prescription Summary")
+        st.download_button(
+            label="Download Prescription Summary as Text",
+            data=response,
+            file_name="prescription_summary.txt",
+            mime="text/plain"
+        )
         #genai.delete_file(uploaded_file.name)
     except FileNotFoundError as e:
         # Manage Errors: Prescription Not Uploaded
@@ -191,25 +170,6 @@ if submit:
         # Manage Errors: Other Exceptions
         st.error(f"An error occurred: {e}")
 
-if email:
-    try:
-        
-        # Handle Image Upload and Display
-        image_data = get_image_content(uploaded_file)
-        # Get Response to send as an emaail content
-        response = get_gemini_response(input_prompt, image_data)
-        send_email("pramodklal@gmail.com","","pkumarsg21@gmail.com","Your Eazy Presctiption Report",response)
-        st.write("Email sent!!!!")
-    except Exception as e:
-        # Manage Errors: Other Exceptions
-        st.error(f"An error occurred: {e}")
-# Footer
-st.markdown(
-    """
-    <hr style='margin-top:40px;margin-bottom:10px;border:1px solid #eee;'>
-    <div style='text-align:center; color:#888; font-size:16px; margin-bottom:20px;'>
-        Made with ❤️ by Pramod Lal .
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+
+
+
