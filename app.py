@@ -203,3 +203,13 @@ if email:
     except Exception as e:
         # Manage Errors: Other Exceptions
         st.error(f"An error occurred: {e}")
+# Footer
+st.markdown(
+    """
+    <hr style='margin-top:40px;margin-bottom:10px;border:1px solid #eee;'>
+    <div style='text-align:center; color:#888; font-size:16px; margin-bottom:20px;'>
+        Made with ❤️ by Pramod Lal .
+    </div>
+    """,
+    unsafe_allow_html=True
+)
